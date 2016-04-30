@@ -9,85 +9,78 @@
 * When installing Android SDKs use the SDK manager from within Android Studio (because they told you to) and *first* expand a given SDK level and install *everything* from that level.
 * Get a local copy of the developer docs: `Preferences` ... `Android SDK` > `SDK Tools` > `Documentaton for Android SDK`
 
+Install Sessions:
 
-### 2015-04-25 — For Reel Security
+* [Reel Security (circa April 2016)](./install-notes--2016-04-25.md)
 
-#### Incident Summary
-
-* Pivotal machine images come with Java 6.  Uninstall that and install Oracle's Java before you install Android Studio.
-* When installing Android SDKs use the SDK manager from within Android Studio (because they told you to) and *first* expand a given SDK level and install *everything* from that level.
-
-#### Play-by-Play
-
-1. Downloaded Android Studio 2.0 (~276MB download; ~515MB on disk); copied to Applications
--  Opened Studio
--  Did not import settings
--  Got an error message: "We wanted your IDE to receive upgrades of a secure connection.  THis doesn't work on Java 6."
-  * I [uninstalled the Apple Java](../java/index.md#uninstalling-the-apple-supplied-java-6)
-  - Installed Oracle Java (1.8.0_91)
-  - tried the install again and not more error message.
-- I choose "Standard" install.  Included:
-  * SDK Build tools 23.0.3
-  - SDK Platform Tools 23.1
-  - SDK Tools 25.1.3
-  - Android Support Repository
-  - Goodle Repository
-  - HAXM Installer
-- From the home screen, `Settings` => `Project Structure`, the JDK location was still pointing at JDK 6.
-
-  ```bash
-  /usr/libexec/java_home | pbcopy
-  ```
-
-  and set `JDK Location` in Android Studio to that value.
-- Started a new project named "Canary"
-  1. `(o) Phone and Tablet`
-  - Android Studio downloaded 23_r03 of the SDK
-  - Took defaults in creating the `MainActivity`
-  - Ran the app
-  - `Create New Emulator`
-  - `Nexus 5X`
-  - (first time I came to the `System Image`/`Recommended` view, it said, "nothing to show"; I backed up and did it again, and then four images showed up... I wonder if I had clicked the "refresh" button if that would have been the same thing).
-  - `x86 Images` and selected `KitKat` (API level 19)
-  - Installed x86-19_r03 to `/Users/pivotal/Library/Android/sdk`
-  - Picked that image; back to the `Select Deployment Target`
-  - Took a *really* long time for the enumlator to book (more than 2 minutes)
-    * apparently formating the filesystem
-    - after a while Android Studio got a `IOException: Broken Pipe` a couple NPEs and then stopped trying; emulator seemingly still starting up.
-  - Terminated the emulator
-  - Re-attempted starting app; more broken pipes.
-    * I stopped the app launch.
-    - *(maybe KitKat can't support this larger form-factor? ... seems an unlikely problem)*
-  - Switched to `Nexus 5X` and launched emulator from the "Android Virtual Device Manager"
-  - Meanwhile, attempted to launch application on the Pivotal Samsung phone and it immediately launched.
-  - Deleted device from AVDM
-  - `Preferences` > `Appearance & Behavior` > `System Settings` > `Android SDK` and noticed
-    * the SDK Platforms list did NOT have a complete install
-    - when I clicked `Show Package Details` I see that *just* the system image for KitKat was recognized by Android Studio.
-  - `Launch Standalone SDK Manager`
-    * No part of the KitKat emulator (Android 4.4.2) was installed according to the standalone SDK Manager.
-    - read from Android website that this is intended only for "standalone" use.
-  - Back in the `Preferences` ... `Android SDK`, selected `Android 4.4 (KitKat)` and clicked `Apply`
-    * Notice that this is talking about API 19, rev 4 (not 3 like earlier).
-  - Recreated a Virtual Device and launched it.
-    * Same broken pipe dreams.
-  - Back in the `Preferences` ... `Android SDK`, uninstalled everything under `Android 4.4`; clicked `Apply`
-  - Back in the `Preferences` ... `Android SDK`, installed everything under `Android 4.4`; clicked `Apply`
-  - Deleted Virtual Device in the AVDM
-  - When to recreate new Virtual Device
-    * now I see three entries for `KitKat`; two with Google APIs...
-    - I picked the first one listed.
-  - It finally worked!!!
-
-
-> **Device Details:**
->
-> Galaxy Note3; Android 4.4.2 (KitKat)
 
 # Fundamentals
 
-* [Fragments](http://developer.android.com/guide/components/fragments.html) were introduced in [Honeycomb](https://en.wikipedia.org/wiki/Android_Honeycomb)
+## Application Architecture
 
+### The Things
+
+* [Activities](https://developer.android.com/guide/components/activities.html) encapsulate a single screen of interaction with the user.
+  * which are composed from UI chunks or [Fragments](http://developer.android.com/guide/components/fragments.html).
+- [Intents](https://developer.android.com/guide/components/intents-filters.html) are messages sent to Activites, Services, and Broadcast Receivers.  Intents are messages sent between "application components".
+  * the payload of an Intent is an "Action", "Category" and "Extras".
+  * invoking Activities can request a response (which arrives in the form of an Intent)
+- [Services](https://developer.android.com/guide/components/services.html) encapsulate "backend" behavior that requires no UI.
+  * should be used for any work that is "long-running" (see [Process and Thread Model](#process-and-thread-model), below.
+- [Broadcast Receivers](https://developer.android.com/reference/android/content/BroadcastReceiver.html) responses to system-wide events (via an Intent).
+- [Content Providers](https://developer.android.com/guide/topics/providers/content-providers.html) encapsulate a data store meant to be shared with other applications (e.g. Contacts).
+- [App Widgets](https://developer.android.com/guide/topics/appwidgets/index.html) are mini applications that are meant to be used within another application (e.g. mini music player on the Home screen).
+
+### Process and Thread Model
+
+#### Scheduling / Lifecycle
+
+*  Each application begins as a process and a single thread.
+-  Processes are kept alive as long as possible, but are terminated, least important to most.
+-  The priorities are this (most to least):
+   1. activities, services, and broadcast receivers that are actively doing work.
+   -  activities that are paused but still visible (or services bound to such activities)
+   -  background services (i.e. launched with `startService()`)
+   -  backgrounded activities (i.e. that have been `onStop()`'ed.
+-  Practical implication: a process doing the same work through a Service will be higher priority than a process using an async task. 
+
+#### Multi-Threading
+
+* Only do work within the UI thread when it costs less to do than spawning a new thread.
+- Use [`AsyncTask`](https://developer.android.com/reference/android/os/AsyncTask.html) to background work efficiently.
+  * fully featured.  Allows you to report progress and be cancelled.
+- Work invoked through bound services occur not in the UI thread but from an OS-managed thread pool.
+- ContentProviders process requests in within its own process (and therefore its own thread pool)
+
+
+## General Attitudes
+
+* Android is an object-oriented system, designed to support lots of little things signaling to each other.
+* Design applications to operate as cooperating cells.
+* Individual components (Activities, Fragments, Services, etc.) must be resilient — design to survive sudden stops and restarts (e.g. when a user rotates the device).
+* [AndroidManifest.xml is a public API of your "app"](http://android-developers.blogspot.com/2011/06/things-that-cannot-change.html)
+* Activities and Broadcast Receivers should have very quick transaction times; anything longer should become a Service.
+
+## Implementation Guidelines
+
+### The Activity Lifecycle
+
+*  `onCreate()` — allocate resources, start fetches,
+-  `onStart()` — 
+-  `onRestoreInstanceState()` — restore UI and local app state 
+-  `onResume()` — 
+-  `onPause()` — store data that should be persisted across application launches or that might be used by an Activity taking over.
+-  `onSaveInstanceState()` — save local app state *(not called if app is definitely quitting)* 
+-  `onStop()`
+   * cancel any background tasks (e.g. `AsyncTask` instances) 
+-  `onDestroy()`
+
+
+Out-of-The Box:
+* Most `View`s can save their own state (and will do so via the default implementation of `Activity.onSaveInstanceState()`).
+  
+  > **Tip:** only widgets with an `android:id` will be saved.
+  
 
 ## Visual Aspects
 
@@ -95,3 +88,16 @@
   * `dp` — (go-to) density-independent pixels; 1 dp = 1/160 th of the screen.
   * `sp` — (for text) dp's that are sensitive to user's scaling; all text should be in sp's.
   * `mm`, `pt`, `in` — useless as not all devices can scale these appropriately.
+
+# Testing
+
+## Summary
+
+* Use Espresso over Robotium
+  * E. synchronizes the Instrumentation thread with the UI thread while R. uses sleeps.
+  - R. exposes objects that should not be modified off of the UI thread
+  - E. is used internally by Google
+  - sources: 
+    * [StackOverflow: Google Espresso or Robotium](http://stackoverflow.com/questions/20046021/google-espresso-or-robotium)
+    * [Greenhouse CI: Making UI testing on Android easy](http://blog.greenhouseci.com/greenhouse/update/robotium-and-espresso/)
+
