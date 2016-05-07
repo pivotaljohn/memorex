@@ -1,0 +1,3 @@
+... for humans, no bundles ...
+
+* [Alex Lockwood's Android Design Patterns](http://www.androiddesignpatterns.com/archives/)

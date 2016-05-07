@@ -1,6 +1,18 @@
 
 # Getting Started
 
+## The Fast Track
+
+1. Read through the [Introduction to Android](https://developer.android.com/guide/index.html) (it's very high signal and starts to point you to good initial resources).
+  - You'll install Android Studio: IntelliJ configured for Android development.
+  - Prime with [Building Your First App](https://developer.android.com/training/basics/firstapp/index.html), ASAP.
+  - Get familiar with the two primary app components: [Activities](https://developer.android.com/guide/components/activities.html) and [Fragments](https://developer.android.com/guide/components/fragments.html).
+    * pay special attention to the lifecycle stuff.
+-  Go through the [Android Testing Codelab](https://codelabs.developers.google.com/codelabs/android-testing/index.html) to get a feel for how TDD can look on Android.
+-  (TODO: Dagger 2)
+-
+
+
 ## Installing Android Studio
 
 ### Summary
@@ -75,6 +87,13 @@ Install Sessions:
    * cancel any background tasks (e.g. `AsyncTask` instances) 
 -  `onDestroy()`
 
+![The Activity Lifecycle](https://developer.android.com/images/activity_lifecycle.png)
+
+
+### The Fragment Lifecycle
+
+* Using [`Fragment.setRetainInstance()`](https://developer.android.com/reference/android/app/Fragment.html#setRetainInstance(boolean)) can create lifeboats for active components to survive dreaded "Configuration Changes" (as described in [Handling Configuration Changes with Fragments](http://www.androiddesignpatterns.com/2013/04/retaining-objects-across-config-changes.html)).
+
 
 Out-of-The Box:
 * Most `View`s can save their own state (and will do so via the default implementation of `Activity.onSaveInstanceState()`).
@@ -88,16 +107,4 @@ Out-of-The Box:
   * `dp` — (go-to) density-independent pixels; 1 dp = 1/160 th of the screen.
   * `sp` — (for text) dp's that are sensitive to user's scaling; all text should be in sp's.
   * `mm`, `pt`, `in` — useless as not all devices can scale these appropriately.
-
-# Testing
-
-## Summary
-
-* Use Espresso over Robotium
-  * E. synchronizes the Instrumentation thread with the UI thread while R. uses sleeps.
-  - R. exposes objects that should not be modified off of the UI thread
-  - E. is used internally by Google
-  - sources: 
-    * [StackOverflow: Google Espresso or Robotium](http://stackoverflow.com/questions/20046021/google-espresso-or-robotium)
-    * [Greenhouse CI: Making UI testing on Android easy](http://blog.greenhouseci.com/greenhouse/update/robotium-and-espresso/)
 
