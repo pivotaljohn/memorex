@@ -38,7 +38,7 @@ Espresso is superior to Robotium:
   ![IntrumentationTestRunner](https://developer.android.com/images/testing/test_framework.png)
 
 > **Tip:**
- You need to turn off animations on your test device (or emulator), otherwise Espresso may not work as expected and your tests may fail.  Turn off animations from Settings by opening Developer Options and turning all the following options under “Drawing” off:
+ You need to turn off animations on your test device (or emulator), otherwise Espresso may not work as expected and your tests may fail.  For example, the tests may spin for a long time and fail complaining that the "Activity was not launched."  Turn off animations from Settings by opening Developer Options and turning all the following options under “Drawing” off:
 >
 * Window animation scale
 - Transition animation scale
