@@ -20,10 +20,13 @@ This is one of the main points of this code example: separating as much of the c
 Nuts & bolts, this becomes a 4-tuple of classes:
 
 * a `...Contract` — an interface that defines the responsibilities of the `View` and the `Presenter` with respect to the named screen.  Within that two inner interfaces:
-  * `UserActionListener`<sup>1</sup> — defines the various actions a user can take.
+  * `UserActionListener`<sup>1</sup> — defines the various actions a user can take in non-UI terms.
   - `View` — what the user-facing components must be able to do.
     - including `setUserActionListener()` because the "View" is responsible for wiring GUI widgets with the corresponding `UserActionListener` actions.
-* a `...Presenter` the fulfills the responsibilities of the `UserActionListener`.
+* a `...Presenter` fulfills the responsibilities of the `UserActionListener`.
+* a `...Fragment` fulfills the responsibilities of the `View`
+
+(In subsequent use of this idea, I'm happier with the names, "`UI`" instead of "`View`" and "`Actuator`" instead of "`UserActionListener`"
 
 -
 
@@ -32,6 +35,11 @@ Nuts & bolts, this becomes a 4-tuple of classes:
 ## Wrapping *any* Resource
 
 Even seemingly simple resources (e.g. [ImageFileImpl](https://github.com/googlecodelabs/android-testing/blob/305e806d819d068e8f960263865755ead8676fa8/app/src/main/java/com/example/android/testing/notes/util/ImageFileImpl.java)) are extracted with an interface in front to facilitate injecting a testing/mock implementation.
+
+## Custom Hamcrest Matchers (incubating)
+
+* this example shows how custom matchers can start out life merely as a private method on the test class.
+- details of locating views are really only important when troubleshooting tests and reduce readability; extracting them should feel like extracting a method in an implementation class.
 
 
 ## Instrumenting for Espresso
@@ -43,6 +51,8 @@ Even seemingly simple resources (e.g. [ImageFileImpl](https://github.com/googlec
   * When [AddNoteFragment#showImagePreview()](https://github.com/googlecodelabs/android-testing/blob/305e806d819d068e8f960263865755ead8676fa8/app/src/main/java/com/example/android/testing/notes/addnote/AddNoteFragment.java#L163) loads an image and then signals from within the [`onResourceReady()`](https://github.com/googlecodelabs/android-testing/blob/305e806d819d068e8f960263865755ead8676fa8/app/src/main/java/com/example/android/testing/notes/addnote/AddNoteFragment.java#L175) callback when done.
   - and in general, searching for [`EspressoIdlingResource.increment();`](https://github.com/googlecodelabs/android-testing/search?utf8=%E2%9C%93&q=EspressoIdlingResource.increment%28%29%3B)
 
+See also [ATSL's Using registerIdlingResource to synchronize with custom resources](https://google.github.io/android-testing-support-library/docs/espresso/advanced/index.html#using-registeridlingresource-to-synchronize-with-custom-resources).
+
 ## Light-Weight Dependency Injection
 
 * in `app/build.gradle` defined two `productFlavors`: `mock` and `prod`
@@ -53,4 +63,11 @@ Even seemingly simple resources (e.g. [ImageFileImpl](https://github.com/googlec
 Defined all dependencies at root `build.gradle`
 * separated into SDK & Tools and application dependencies
 - makes it really easy both to read which versions are in play *and* to change them.
+
+
+## Movement Under Test
+
+* [NoteDetailScreenTest](https://github.com/googlecodelabs/android-testing/blob/305e806d819d068e8f960263865755ead8676fa8/app/src/androidTestMock/java/com/example/android/testing/notes/notedetail/NoteDetailScreenTest.java) — that an Activity properly unpacks the note Id from an Intent *and* that this is the Note displayed.
+  * Could this be done with two unit tests?
+
 

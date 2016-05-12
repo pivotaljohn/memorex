@@ -94,7 +94,6 @@ Install Sessions:
 
 * Using [`Fragment.setRetainInstance()`](https://developer.android.com/reference/android/app/Fragment.html#setRetainInstance(boolean)) can create lifeboats for active components to survive dreaded "Configuration Changes" (as described in [Handling Configuration Changes with Fragments](http://www.androiddesignpatterns.com/2013/04/retaining-objects-across-config-changes.html)).
 
-
 Out-of-The Box:
 * Most `View`s can save their own state (and will do so via the default implementation of `Activity.onSaveInstanceState()`).
   
