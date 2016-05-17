@@ -52,3 +52,4 @@ Espresso is superior to Robotium:
 * [Getting Started With Testing](https://developer.android.com/training/testing/start/index.html)
 * [Android Testing Tools](https://developer.android.com/tools/testing/index.html)
   * [Android Testing Support Library](https://developer.android.com/tools/testing-support-library/index.html)
+* [Test Sizes](http://googletesting.blogspot.com/2010/12/test-sizes.html)
