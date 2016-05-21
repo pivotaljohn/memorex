@@ -52,3 +52,22 @@ Espresso is superior to Robotium:
 * [Getting Started With Testing](https://developer.android.com/training/testing/start/index.html)
 * [Android Testing Tools](https://developer.android.com/tools/testing/index.html)
   * [Android Testing Support Library](https://developer.android.com/tools/testing-support-library/index.html)
+
+
+----
+# The Big Day of Testing: May 20, 2016
+
+* Clean-up!  We weren't thinking about what state was being left behind by each test (in our case, the file that was storing the "last known stage".  Also, there was the Mock Web Server in a Service that was running between each test.
+* If your starting Activity emits intents that you want to stub (e.g. starting an Activity that's in another module on which yours does not depend), you MUST use an `ActivityTestRule` not an `IntentTestRule`.
+  * You think that since you're dealing with intents, you ought to use `IntentsTestRule`...
+  * If you want to stub an intent (i.e. `intending(..)`) before the activity launches, then you must configure the `IntentTestRule` to **not** start the activity.
+  * Before you do the stubbing, you must call `Intents.init()` first.
+  * `IntentTestRule#launchActivity()` *also* calls `Intents.init()` "for you"; you can't `init()` twice and you'll get an exception.
+  * So:
+    1. use `ActivityTestRule` instead, configured to not launch the Activity
+    2. call `Intents.init()` (prolly in your `@Before`)
+    3. do your stubbing appropriate to your test within your `@Test`
+    4. call `mActivityTestRule.launchActivity(new Intent())` when you're ready to start the Activity.
+       * note that `ActivityTestRule` does not call `Intents.init()` and you won't get that exception.
+    5. call `Intents.release()` (also likely in your `@After`) to cleanup the Intents business.
+   
