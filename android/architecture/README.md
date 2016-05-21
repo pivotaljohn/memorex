@@ -1,6 +1,11 @@
 
 # Application Architecture
 
+
+## Dependency Injection with Dagger2
+
+* [(https://github.com/google/dagger/tree/master/examples/android-simple/src/main/java/com/example/dagger/simple)
+
 ## Resources:
 
 * [Martin Fowler on GUI Architectures](http://www.martinfowler.com/eaaDev/uiArchs.html)
