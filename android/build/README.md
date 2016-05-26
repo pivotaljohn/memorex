@@ -1,4 +1,5 @@
 
+
 # Group Dependencies by Need
 
 ... in `build.gradle`
@@ -25,18 +26,32 @@ Error:Conflict with dependency 'junit:junit'.
 
 Action:
 
-1. List dependencies,
-
-   ```bash
-   ./gradlew app:dependencies | less
-   ```
--  When the transitive dependency is added to an "earlier" configuration (e.g. `[buildType]compile`), you'll likely exclude the conflicting transitive dependency and then re-add the proper version.
+1.  In the root `build.gradle`, fail fast on version conflicts
 
    ```groovy
-    // Mock Web Server
-    debugCompile("com.squareup.okhttp3:mockwebserver:3.2.0"){
-        exclude group: 'junit', module: 'junit' // likely mismatches version of junit we're using.
-    }
-    debugCompile "junit:junit:$rootProject.JUNIT_VER"
+   configurations.all {
+      // Tolerating version conflicts can be risky.  Instead, fail fast and resolve
+      // conflicts using "force", below.
+      failOnVersionConflict()
+      ...
+   ``` 
+-  Check dependencies:
+
+   ```bash
+   ./gradlew app:dependencies
+
+   ```
+-  When the transitive dependency is added to an "earlier" configuration (e.g. `[buildType]compile`), you'll likely exclude the conflicting transitive dependency and then re-add the proper version.
+-  Back in the root `build.gradle`, `force` the resolution:
+
+   ```groovy
+   configurations.all {
+      // Tolerating version conflicts can be risky.  Instead, fail fast and resolve
+      // conflicts using "force", below.
+      failOnVersionConflict()
+      
+      force "junit:junit:$rootProject.JUNIT_VER"
+      force "com.android.support:support-v4:${rootProject.ANDROID_SUPPORT_LIBRARY_VER}"
+      force "com.android.support:support-annotations:$rootProject.ANDROID_SUPPORT_LIBRARY_VER"
+   }
     ```
-  * it is possible for the contributed version to be earlier *or* later than the desired one, by `exclude`'ing and then explicitly fingering the specific version we're using is the "safest" way to manage the dependency.
