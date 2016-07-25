@@ -1,6 +1,10 @@
 
 # Application Architecture
 
+## Chunk Application Into Modules
+
+* for each Activity/Content Provider/Sync Adapter/(android component), create a separate [Android Library](https://sites.google.com/a/android.com/tools/tech-docs/new-build-system/user-guide#TOC-Library-projects) module.
+  * see also: [build](../build) for details of how to make the app module dependent on the libraries.
 
 ## Dependency Injection with Dagger2
 

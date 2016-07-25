@@ -9,8 +9,7 @@
   - Get familiar with the two primary app components: [Activities](https://developer.android.com/guide/components/activities.html) and [Fragments](https://developer.android.com/guide/components/fragments.html).
     * pay special attention to the lifecycle stuff.
 -  Go through the [Android Testing Codelab](https://codelabs.developers.google.com/codelabs/android-testing/index.html) to get a feel for how TDD can look on Android.
--  (TODO: Dagger 2)
--
+- (TODO: Dagger 2)
 
 
 ## Installing Android Studio
@@ -53,8 +52,8 @@ Install Sessions:
    1. activities, services, and broadcast receivers that are actively doing work.
    -  activities that are paused but still visible (or services bound to such activities)
    -  background services (i.e. launched with `startService()`)
-   -  backgrounded activities (i.e. that have been `onStop()`'ed.
--  Practical implication: a process doing the same work through a Service will be higher priority than a process using an async task. 
+   -  backgrounded activities (i.e. that have been `onStop()`'ed.)
+-  Practical implication: a process doing the same work through a Service will be higher priority than a process using an async task.
 
 #### Multi-Threading
 
@@ -77,14 +76,14 @@ Install Sessions:
 
 ### The Activity Lifecycle
 
-*  `onCreate()` — allocate resources, start fetches,
--  `onStart()` — 
--  `onRestoreInstanceState()` — restore UI and local app state 
--  `onResume()` — 
+*  `onCreate()` — initialization required only once (e.g. creating and injecting depedencies)
+-  `onStart()` — things that should be done each time the Activity becomes activty, again.
+-  `onRestoreInstanceState()` — restore UI and local app state
+-  `onResume()` —
 -  `onPause()` — store data that should be persisted across application launches or that might be used by an Activity taking over.
--  `onSaveInstanceState()` — save local app state *(not called if app is definitely quitting)* 
+-  `onSaveInstanceState()` — save local app state *(not called if app is definitely quitting)*
 -  `onStop()`
-   * cancel any background tasks (e.g. `AsyncTask` instances) 
+   * cancel any background tasks (e.g. `AsyncTask` instances)
 -  `onDestroy()`
 
 ![The Activity Lifecycle](https://developer.android.com/images/activity_lifecycle.png)
@@ -96,9 +95,9 @@ Install Sessions:
 
 Out-of-The Box:
 * Most `View`s can save their own state (and will do so via the default implementation of `Activity.onSaveInstanceState()`).
-  
+
   > **Tip:** only widgets with an `android:id` will be saved.
-  
+
 
 ## Visual Aspects
 
