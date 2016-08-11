@@ -46,6 +46,19 @@ Espresso is superior to Robotium:
 >
 *source: [Google Codelabs — Android Testing](https://codelabs.developers.google.com/codelabs/android-testing/index.html?index=..%2F..%2Findex#6)*
 
+# Patterns/Techniques
+
+## Handling (Runtime) Permissions
+
+* If you do not request permissions at install time, your app can request the permission at runtime.
+* Espresso cannot reach the views presented by the system (different process); so you can't acknowledge the permissions dialog.
+* Skip this detail in your Journey Test by granting permissions ahead-of-time.
+
+In the test prep script, include: 
+```bash
+$ANDROID_SDK_HOME/platform-tools/adb shell pm grant <package-id> <permission-name>
+```
+
 # Resources
 
 * [Google Codelabs](https://codelabs.developers.google.com/?cat=Android)
